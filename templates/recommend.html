@@ -174,6 +174,23 @@
     transform: translateY(-1px);
   }
 
+  @media (max-width: 560px){
+    form.search-form{
+      flex-wrap: wrap;
+      border-radius: var(--radius-md);
+      padding: 8px 10px 10px 16px;
+    }
+    form.search-form input{
+      min-width: 0;
+    }
+    form.search-form button{
+      flex: 1 1 100%;
+      order: 3;
+      text-align: center;
+      margin-top: 4px;
+    }
+  }
+
   .hint{
     margin-top:14px;
     font-size:12.5px;
