@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bookish — Top 50 Books</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #121319;
+    --bg-alt: #191b24;
+    --surface: #1e2029;
+    --surface-hover: #262838;
+    --ink: #f3eee3;
+    --muted: #9a9bac;
+    --gold: #d8a960;
+    --gold-soft: #ecd6a9;
+    --sage: #7f9d8e;
+    --border: rgba(243,238,227,0.08);
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    --radius-pill: 999px;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(216,169,96,0.10), transparent 60%),
+      radial-gradient(1000px 500px at 100% 0%, rgba(127,157,142,0.08), transparent 55%),
+      var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a{ text-decoration:none; color:inherit; }
+
+  /* ---------- NAV ---------- */
+  .navbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    max-width:1180px;
+    margin:0 auto;
+    padding:28px 32px 0;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:20px;
+    letter-spacing:0.2px;
+  }
+  .brand svg{ flex-shrink:0; }
+  .navlinks{
+    display:flex;
+    gap:6px;
+    background: var(--surface);
+    border:1px solid var(--border);
+    padding:5px;
+    border-radius: var(--radius-pill);
+  }
+  .navlinks a{
+    padding:9px 18px;
+    border-radius: var(--radius-pill);
+    font-size:14px;
+    font-weight:500;
+    color: var(--muted);
+    transition: all .2s ease;
+  }
+  .navlinks a.active{
+    background: var(--gold);
+    color:#20180a;
+  }
+  .navlinks a:not(.active):hover{
+    color: var(--ink);
+    background: var(--surface-hover);
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    max-width:1180px;
+    margin: 64px auto 16px;
+    padding: 0 32px;
+  }
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:12.5px;
+    letter-spacing:1.6px;
+    text-transform:uppercase;
+    color: var(--sage);
+    font-weight:600;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px;
+    height:1px;
+    background: var(--sage);
+  }
+  h1.title{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size: clamp(40px, 6vw, 68px);
+    line-height:1.05;
+    margin:0 0 18px;
+    max-width: 700px;
+  }
+  h1.title em{
+    color: var(--gold-soft);
+    font-style:italic;
+  }
+  .subtitle{
+    color: var(--muted);
+    font-size:17px;
+    max-width:520px;
+    line-height:1.6;
+    margin:0 0 8px;
+  }
+
+  /* ---------- GRID ---------- */
+  .shelf{
+    max-width:1180px;
+    margin:56px auto 100px;
+    padding: 0 32px;
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:24px;
+  }
+  @media (max-width: 1000px){ .shelf{ grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 560px){ .shelf{ grid-template-columns: 1fr; } }
+
+  .book-card{
+    position:relative;
+    background: var(--surface);
+    border:1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding:18px 18px 20px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    transition: transform .25s ease, background .25s ease, border-color .25s ease;
+  }
+  .book-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0;
+    width:5px;
+    height:100%;
+    background: var(--spine, var(--gold));
+    opacity:.85;
+  }
+  .book-card:hover{
+    transform: translateY(-6px);
+    background: var(--surface-hover);
+    border-color: rgba(216,169,96,0.35);
+  }
+
+  .cover-wrap{
+    width:100%;
+    aspect-ratio: 2 / 3;
+    border-radius: var(--radius-md);
+    overflow:hidden;
+    background: var(--bg-alt);
+    margin-bottom:16px;
+    box-shadow: 0 12px 24px -14px rgba(0,0,0,0.6);
+  }
+  .cover-wrap img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .book-title{
+    font-family:'Fraunces', serif;
+    font-size:16.5px;
+    font-weight:600;
+    line-height:1.35;
+    margin:0 0 6px;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .book-author{
+    font-size:13px;
+    color: var(--muted);
+    margin:0 0 16px;
+  }
+
+  .meta-row{
+    margin-top:auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding-top:14px;
+    border-top:1px solid var(--border);
+  }
+  .rating-pill{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    background: rgba(216,169,96,0.12);
+    color: var(--gold-soft);
+    font-size:12.5px;
+    font-weight:600;
+    padding:5px 10px;
+    border-radius: var(--radius-pill);
+  }
+  .rating-pill svg{ width:12px; height:12px; }
+  .votes{
+    font-size:12px;
+    color: var(--muted);
+  }
+
+  footer{
+    text-align:center;
+    color: var(--muted);
+    font-size:13px;
+    padding:0 32px 48px;
+  }
+</style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+        <path d="M4 4.5C4 3.67 4.67 3 5.5 3H12V21H5.5C4.67 21 4 20.33 4 19.5V4.5Z" fill="#d8a960"/>
+        <path d="M20 4.5C20 3.67 19.33 3 18.5 3H12V21H18.5C19.33 21 20 20.33 20 19.5V4.5Z" fill="#7f9d8e"/>
+      </svg>
+      Bookish
+    </a>
+    <div class="navlinks">
+      <a href="/" class="active">Home</a>
+      <a href="/recommend">Recommend</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <span class="eyebrow">Reader favorites</span>
+    <h1 class="title">The <em>top 50</em> books, ranked by readers like you.</h1>
+    <p class="subtitle">Every title below has earned at least 50 ratings from our community — sorted by average score, highest first.</p>
+  </section>
+
+  <div class="shelf">
+    {% for i in range(book_name|length) %}
+      <div class="book-card" style="--spine: {{ ['#c97b4a','#7f9d8e','#b0555f','#6f8fa8','#d8a960','#8a7ca8'][i % 6] }}">
+        <div class="cover-wrap">
+          <img src="{{ image[i] }}" alt="{{ book_name[i] }} cover" loading="lazy"
+               onerror="this.onerror=null;this.src='{{ url_for('serve_image', filename='image1.jpg') }}';"
+               onload="if(this.naturalWidth&lt;=2||this.naturalHeight&lt;=2){this.onerror=null;this.src='{{ url_for('serve_image', filename='image1.jpg') }}';}">
+        </div>
+        <p class="book-title">{{ book_name[i] }}</p>
+        <p class="book-author">{{ author[i] }}</p>
+        <div class="meta-row">
+          <span class="rating-pill">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+            {{ "%.1f"|format(rating[i]) }}
+          </span>
+          <span class="votes">{{ votes[i] }} votes</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <footer>Built for readers, by readers · Not affiliated with any publisher</footer>
+
+</body>
+</html>

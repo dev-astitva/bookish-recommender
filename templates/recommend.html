@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bookish — Find Your Next Read</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #121319;
+    --bg-alt: #191b24;
+    --surface: #1e2029;
+    --surface-hover: #262838;
+    --ink: #f3eee3;
+    --muted: #9a9bac;
+    --gold: #d8a960;
+    --gold-soft: #ecd6a9;
+    --sage: #7f9d8e;
+    --border: rgba(243,238,227,0.08);
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    --radius-pill: 999px;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(216,169,96,0.10), transparent 60%),
+      radial-gradient(1000px 500px at 0% 0%, rgba(127,157,142,0.08), transparent 55%),
+      var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a{ text-decoration:none; color:inherit; }
+
+  /* ---------- NAV ---------- */
+  .navbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    max-width:1180px;
+    margin:0 auto;
+    padding:28px 32px 0;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:20px;
+    letter-spacing:0.2px;
+  }
+  .navlinks{
+    display:flex;
+    gap:6px;
+    background: var(--surface);
+    border:1px solid var(--border);
+    padding:5px;
+    border-radius: var(--radius-pill);
+  }
+  .navlinks a{
+    padding:9px 18px;
+    border-radius: var(--radius-pill);
+    font-size:14px;
+    font-weight:500;
+    color: var(--muted);
+    transition: all .2s ease;
+  }
+  .navlinks a.active{
+    background: var(--gold);
+    color:#20180a;
+  }
+  .navlinks a:not(.active):hover{
+    color: var(--ink);
+    background: var(--surface-hover);
+  }
+
+  /* ---------- HERO / SEARCH ---------- */
+  .hero{
+    max-width:720px;
+    margin: 72px auto 0;
+    padding: 0 32px;
+    text-align:center;
+  }
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:12.5px;
+    letter-spacing:1.6px;
+    text-transform:uppercase;
+    color: var(--sage);
+    font-weight:600;
+    margin-bottom:18px;
+    justify-content:center;
+  }
+  .eyebrow::before, .eyebrow::after{
+    content:"";
+    width:22px;
+    height:1px;
+    background: var(--sage);
+  }
+  h1.title{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size: clamp(36px, 5.5vw, 54px);
+    line-height:1.1;
+    margin:0 0 16px;
+  }
+  h1.title em{
+    color: var(--gold-soft);
+    font-style:italic;
+  }
+  .subtitle{
+    color: var(--muted);
+    font-size:16px;
+    line-height:1.6;
+    margin:0 0 36px;
+  }
+
+  form.search-form{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background: var(--surface);
+    border:1px solid var(--border);
+    border-radius: var(--radius-pill);
+    padding:8px 8px 8px 22px;
+    max-width:560px;
+    margin:0 auto;
+    transition: border-color .2s ease;
+  }
+  form.search-form:focus-within{
+    border-color: rgba(216,169,96,0.5);
+  }
+  form.search-form svg{
+    flex-shrink:0;
+    color: var(--muted);
+  }
+  form.search-form input{
+    flex:1;
+    background:transparent;
+    border:none;
+    outline:none;
+    color: var(--ink);
+    font-family:'Inter', sans-serif;
+    font-size:15px;
+    padding:12px 4px;
+  }
+  form.search-form input::placeholder{ color: var(--muted); }
+  form.search-form button{
+    background: var(--gold);
+    color:#20180a;
+    border:none;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:13px 22px;
+    border-radius: var(--radius-pill);
+    cursor:pointer;
+    transition: background .2s ease, transform .15s ease;
+    white-space:nowrap;
+  }
+  form.search-form button:hover{
+    background: var(--gold-soft);
+    transform: translateY(-1px);
+  }
+
+  .hint{
+    margin-top:14px;
+    font-size:12.5px;
+    color: var(--muted);
+  }
+  .hint strong{ color: var(--ink); font-weight:500; }
+
+  /* ---------- AUTOCOMPLETE ---------- */
+  .search-wrap{
+    position:relative;
+    max-width:560px;
+    margin:0 auto;
+  }
+  .suggestions{
+    position:absolute;
+    top: calc(100% + 8px);
+    left:0;
+    right:0;
+    background: var(--surface);
+    border:1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 20px 40px -16px rgba(0,0,0,0.55);
+    overflow:hidden;
+    z-index:20;
+    text-align:left;
+    display:none;
+  }
+  .suggestions.open{ display:block; }
+  .suggestions ul{
+    list-style:none;
+    margin:0;
+    padding:6px;
+    max-height:320px;
+    overflow-y:auto;
+  }
+  .suggestions li{
+    padding:11px 14px;
+    border-radius: 10px;
+    font-size:14px;
+    color: var(--ink);
+    cursor:pointer;
+    transition: background .15s ease;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .suggestions li mark{
+    background:none;
+    color: var(--gold-soft);
+    font-weight:600;
+  }
+  .suggestions li:hover,
+  .suggestions li.active{
+    background: var(--surface-hover);
+  }
+  .suggestions .empty{
+    padding:14px;
+    font-size:13px;
+    color: var(--muted);
+    cursor:default;
+  }
+  .suggestions .empty:hover{ background:none; }
+
+  /* ---------- RESULTS ---------- */
+  .results-heading{
+    max-width:1180px;
+    margin: 72px auto 24px;
+    padding: 0 32px;
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  .results-heading h2{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:24px;
+    margin:0;
+  }
+  .results-heading span{
+    color: var(--muted);
+    font-size:14px;
+  }
+
+  .shelf{
+    max-width:1180px;
+    margin:0 auto 100px;
+    padding: 0 32px;
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:24px;
+  }
+  @media (max-width: 1000px){ .shelf{ grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 560px){ .shelf{ grid-template-columns: 1fr; } }
+
+  .book-card{
+    position:relative;
+    background: var(--surface);
+    border:1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding:18px 18px 20px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    transition: transform .25s ease, background .25s ease, border-color .25s ease;
+  }
+  .book-card::before{
+    content:"";
+    position:absolute;
+    top:0; left:0;
+    width:5px;
+    height:100%;
+    background: var(--spine, var(--gold));
+    opacity:.85;
+  }
+  .book-card:hover{
+    transform: translateY(-6px);
+    background: var(--surface-hover);
+    border-color: rgba(216,169,96,0.35);
+  }
+
+  .cover-wrap{
+    width:100%;
+    aspect-ratio: 2 / 3;
+    border-radius: var(--radius-md);
+    overflow:hidden;
+    background: var(--bg-alt);
+    margin-bottom:16px;
+    box-shadow: 0 12px 24px -14px rgba(0,0,0,0.6);
+  }
+  .cover-wrap img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .book-title{
+    font-family:'Fraunces', serif;
+    font-size:16.5px;
+    font-weight:600;
+    line-height:1.35;
+    margin:0 0 6px;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .book-author{
+    font-size:13px;
+    color: var(--muted);
+    margin:0;
+  }
+
+  /* ---------- EMPTY / ERROR STATES ---------- */
+  .state-box{
+    max-width:480px;
+    margin: 64px auto 100px;
+    padding: 40px 32px;
+    text-align:center;
+  }
+  .state-box .icon{
+    width:56px;
+    height:56px;
+    margin:0 auto 20px;
+    border-radius:50%;
+    background: var(--surface);
+    border:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color: var(--sage);
+  }
+  .state-box.error .icon{ color:#c97b4a; }
+  .state-box h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:19px;
+    margin:0 0 8px;
+  }
+  .state-box p{
+    color: var(--muted);
+    font-size:14px;
+    line-height:1.6;
+    margin:0;
+  }
+</style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a class="brand" href="/">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+        <path d="M4 4.5C4 3.67 4.67 3 5.5 3H12V21H5.5C4.67 21 4 20.33 4 19.5V4.5Z" fill="#d8a960"/>
+        <path d="M20 4.5C20 3.67 19.33 3 18.5 3H12V21H18.5C19.33 21 20 20.33 20 19.5V4.5Z" fill="#7f9d8e"/>
+      </svg>
+      Bookish
+    </a>
+    <div class="navlinks">
+      <a href="/">Home</a>
+      <a href="/recommend" class="active">Recommend</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <span class="eyebrow">Similar reads</span>
+    <h1 class="title">Just finished a <em>great</em> book?</h1>
+    <p class="subtitle">Type in a title you loved and we'll find four books that readers with similar taste enjoyed next.</p>
+
+    <div class="search-wrap">
+      <form action="/recommend_books" method="post" class="search-form" id="searchForm" autocomplete="off">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input name="user_input" id="titleInput" type="text" placeholder="e.g. The Da Vinci Code" value="{{ book_name if book_name else '' }}" required>
+        <button type="submit">Find books</button>
+      </form>
+      <div class="suggestions" id="suggestions">
+        <ul id="suggestionsList"></ul>
+      </div>
+    </div>
+    <p class="hint">Start typing and pick a title, like <strong>1984</strong> or <strong>Message in a Bottle</strong>.</p>
+  </section>
+
+  {% if error %}
+    <div class="state-box error">
+      <div class="icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <h3>We couldn't find that one</h3>
+      <p>{{ error }}</p>
+    </div>
+  {% elif data %}
+    <div class="results-heading">
+      <h2>Readers also loved</h2>
+      <span>based on “{{ book_name }}”</span>
+    </div>
+    <div class="shelf">
+      {% for i in data %}
+        <div class="book-card" style="--spine: {{ ['#c97b4a','#7f9d8e','#b0555f','#6f8fa8','#d8a960','#8a7ca8'][loop.index0 % 6] }}">
+          <div class="cover-wrap">
+            <img src="{{ i[2] }}" alt="{{ i[0] }} cover" loading="lazy"
+                 onerror="this.onerror=null;this.src='{{ url_for('serve_image', filename='image1.jpg') }}';"
+                 onload="if(this.naturalWidth&lt;=2||this.naturalHeight&lt;=2){this.onerror=null;this.src='{{ url_for('serve_image', filename='image1.jpg') }}';}">
+          </div>
+          <p class="book-title">{{ i[0] }}</p>
+          <p class="book-author">{{ i[1] }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="state-box">
+      <div class="icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <h3>Your recommendations will appear here</h3>
+      <p>Search for a title above to get started.</p>
+    </div>
+  {% endif %}
+
+  <script id="titles-data" type="application/json">{{ (titles if titles else []) | tojson }}</script>
+  <script>
+    (function () {
+      const TITLES = JSON.parse(document.getElementById('titles-data').textContent);
+      const input = document.getElementById('titleInput');
+      const box = document.getElementById('suggestions');
+      const list = document.getElementById('suggestionsList');
+      const MAX_RESULTS = 8;
+      let activeIndex = -1;
+      let currentItems = [];
+
+      function escapeHtml(str) {
+        return str.replace(/[&<>"']/g, function (c) {
+          return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+        });
+      }
+
+      function highlight(title, query) {
+        const idx = title.toLowerCase().indexOf(query.toLowerCase());
+        if (idx === -1) return escapeHtml(title);
+        return (
+          escapeHtml(title.slice(0, idx)) +
+          '<mark>' + escapeHtml(title.slice(idx, idx + query.length)) + '</mark>' +
+          escapeHtml(title.slice(idx + query.length))
+        );
+      }
+
+      function closeBox() {
+        box.classList.remove('open');
+        list.innerHTML = '';
+        activeIndex = -1;
+        currentItems = [];
+      }
+
+      function renderSuggestions(query) {
+        const q = query.trim().toLowerCase();
+        if (!q) { closeBox(); return; }
+
+        const matches = TITLES.filter(t => t.toLowerCase().includes(q)).slice(0, MAX_RESULTS);
+
+        if (matches.length === 0) {
+          list.innerHTML = '<li class="empty">No matching titles</li>';
+          box.classList.add('open');
+          currentItems = [];
+          activeIndex = -1;
+          return;
+        }
+
+        currentItems = matches;
+        activeIndex = -1;
+        list.innerHTML = matches
+          .map(t => '<li data-title="' + escapeHtml(t) + '">' + highlight(t, query) + '</li>')
+          .join('');
+        box.classList.add('open');
+      }
+
+      function selectTitle(title) {
+        input.value = title;
+        closeBox();
+        input.focus();
+      }
+
+      input.addEventListener('input', () => renderSuggestions(input.value));
+
+      input.addEventListener('focus', () => {
+        if (input.value.trim()) renderSuggestions(input.value);
+      });
+
+      list.addEventListener('click', (e) => {
+        const li = e.target.closest('li[data-title]');
+        if (li) selectTitle(li.getAttribute('data-title'));
+      });
+
+      input.addEventListener('keydown', (e) => {
+        const items = list.querySelectorAll('li[data-title]');
+        if (!box.classList.contains('open') || items.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          activeIndex = (activeIndex + 1) % items.length;
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          activeIndex = (activeIndex - 1 + items.length) % items.length;
+        } else if (e.key === 'Enter') {
+          if (activeIndex >= 0) {
+            e.preventDefault();
+            selectTitle(items[activeIndex].getAttribute('data-title'));
+          }
+          return;
+        } else if (e.key === 'Escape') {
+          closeBox();
+          return;
+        } else {
+          return;
+        }
+
+        items.forEach(li => li.classList.remove('active'));
+        items[activeIndex].classList.add('active');
+        items[activeIndex].scrollIntoView({ block: 'nearest' });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-wrap')) closeBox();
+      });
+    })();
+  </script>
+
+</body>
+</html>
